@@ -1,0 +1,8 @@
+[Plugin]
+Module=camera-indicator
+Name=Camera in Use
+Description=Shows a dot in the top bar while an app uses the camera, with the name of the app
+Authors=Singularity Team
+Copyright=Copyright © 2025 Singularity Team
+Website=https://sinty.dev
+X-Singularity-App=dev.sinty.camera

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/dev/sinty/camera/icons/scalable/actions">
+    <file alias="camera-mirror-symbolic.svg">symbolic/camera-mirror-symbolic.svg</file>
+    <file alias="camera-switch-symbolic.svg">symbolic/camera-switch-symbolic.svg</file>
+    <file alias="camera-timer-symbolic.svg">symbolic/camera-timer-symbolic.svg</file>
+  </gresource>
+</gresources>

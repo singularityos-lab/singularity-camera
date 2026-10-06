@@ -1,0 +1,5 @@
+src/app.vala
+src/window.vala
+src/camera.vala
+plugin/camera_indicator.vala
+plugin/camera_users.vala

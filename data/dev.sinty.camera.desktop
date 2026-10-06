@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=Camera
+Comment=Take photos and record videos
+Exec=singularity-camera
+Icon=dev.sinty.camera
+Terminal=false
+Type=Application
+Categories=AudioVideo;Video;Recorder;
+Keywords=camera;webcam;photo;video;record;selfie;picture;
+StartupWMClass=dev.sinty.camera
+Actions=photo;video;
+
+[Desktop Action photo]
+Name=Take a Photo
+Exec=singularity-camera --photo
+
+[Desktop Action video]
+Name=Record a Video
+Exec=singularity-camera --video
