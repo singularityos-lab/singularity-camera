@@ -116,6 +116,30 @@ namespace Singularity.Apps.Camera {
     background-color: white;
 }
 
+.camera-qr-pill {
+    background-color: alpha(black, 0.62);
+    color: white;
+    border-radius: 999px;
+    padding: 6px 6px 6px 14px;
+}
+
+.camera-live-text {
+    background-color: alpha(black, 0.62);
+    color: white;
+    border-radius: 999px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.camera-live-text:checked {
+    background-color: white;
+}
+
+.camera-live-text:checked image {
+    color: #0b0c0f;
+    -gtk-icon-style: symbolic;
+}
+
 .camera-countdown {
     font-size: 120px;
     font-weight: 800;

@@ -51,6 +51,14 @@ namespace Singularity.Apps.Camera {
         private Button last_button;
         private LastShot last_picture;
         private Label countdown;
+        private Box qr_pill;
+        private Label qr_label;
+        private string qr_text = "";
+        private Gdk.Texture? qr_frame = null;
+        private int64 qr_scanned_at = 0;
+        private int64 qr_seen_at = 0;
+        private Singularity.Widgets.LiveTextSession? live_text = null;
+        private Gdk.Texture? last_frame = null;
         private Box flash;
         private Button timer_bubble;
         private uint aspect_id;
@@ -80,10 +88,16 @@ namespace Singularity.Apps.Camera {
                 lookup_action ("mirror").activate (null);
             });
             add_bubble_icon ("folder-pictures-symbolic", _("Open Camera Folder"), () => open_folder ());
+            add_bubble_icon ("singularity-share-symbolic", _("Share the Last Photo or Video"), () => {
+                if (last_path != null) Singularity.Share.files (this, { File.new_for_path (last_path) });
+            });
             install_actions ();
 
             engine.frame.connect ((tex) => {
+                last_frame = tex;
+                if (live_text != null && live_text.active) return;
                 preview.paintable = tex;
+                scan_qr (tex);
                 if (tex.width != aspect_w || tex.height != aspect_h) {
                     aspect_w = tex.width;
                     aspect_h = tex.height;
@@ -180,6 +194,50 @@ namespace Singularity.Apps.Camera {
             set_action_enabled ("switch-camera", live && engine.devices.size > 1);
         }
 
+        private void scan_qr (Gdk.Texture tex) {
+            int64 now = get_monotonic_time ();
+            if (now - qr_scanned_at < 500000) return;
+            qr_scanned_at = now;
+            if (engine.recording || !Singularity.QrDecoder.available) return;
+            string[] codes = Singularity.QrDecoder.decode_texture (tex);
+            if (codes.length > 0) {
+                qr_seen_at = now;
+                qr_frame = tex;
+                if (codes[0] != qr_text) {
+                    qr_text = codes[0];
+                    qr_label.label = describe_qr (qr_text);
+                }
+                qr_pill.visible = true;
+            } else if (qr_pill.visible && now - qr_seen_at > 2000000) {
+                qr_pill.visible = false;
+            }
+        }
+
+        private static string describe_qr (string text) {
+            if (text.has_prefix ("WIFI:")) {
+                int s = text.index_of ("S:");
+                string ssid = "";
+                if (s >= 0) {
+                    string[] parts = text.substring (s + 2).split (";");
+                    ssid = parts.length > 0 ? parts[0] : "";
+                }
+                return ssid != "" ? _("Wi-Fi network %s").printf (ssid) : _("Wi-Fi network");
+            }
+            if (text.has_prefix ("BEGIN:VCARD") || text.has_prefix ("MECARD:")) return _("Contact card");
+            if (text.has_prefix ("BEGIN:VEVENT") || text.has_prefix ("BEGIN:VCALENDAR")) return _("Calendar event");
+            if (text.has_prefix ("otpauth://")) return _("Two-factor code");
+            return text.replace ("\n", " ");
+        }
+
+        private void open_qr () {
+            if (qr_frame == null) return;
+            string dir = Path.build_filename (Environment.get_user_cache_dir (), "singularity", "camera-qr");
+            DirUtils.create_with_parents (dir, 0700);
+            string path = Path.build_filename (dir, "code.png");
+            if (!qr_frame.save_to_png (path)) return;
+            Singularity.ShareTargets.activate_app_action.begin ("dev.sinty.qrcodes", "scan-image", new Variant.strv ({ File.new_for_path (path).get_uri () }));
+        }
+
         public void select_mode (string mode) {
             if (engine.recording) return;
             if (mode == "video") video_mode.active = true;
@@ -230,6 +288,48 @@ namespace Singularity.Apps.Camera {
             flash.can_target = false;
             flash.opacity = 0;
             overlay.add_overlay (flash);
+
+            qr_pill = new Box (Orientation.HORIZONTAL, 8);
+            qr_pill.add_css_class ("camera-qr-pill");
+            qr_pill.halign = Align.CENTER;
+            qr_pill.valign = Align.START;
+            qr_pill.margin_top = 24;
+            qr_pill.visible = false;
+            var qr_icon = new Image.from_icon_name ("dev.sinty.qrcodes");
+            qr_icon.pixel_size = 24;
+            qr_pill.append (qr_icon);
+            qr_label = new Label ("");
+            qr_label.ellipsize = Pango.EllipsizeMode.END;
+            qr_label.max_width_chars = 40;
+            qr_pill.append (qr_label);
+            var qr_open = new Button.with_label (_("Open in QR Codes"));
+            qr_open.add_css_class ("pill");
+            qr_open.add_css_class ("suggested-action");
+            qr_open.clicked.connect (open_qr);
+            qr_pill.append (qr_open);
+            var qr_copy = new Button.from_icon_name ("edit-copy-symbolic");
+            qr_copy.add_css_class ("flat");
+            qr_copy.tooltip_text = _("Copy");
+            qr_copy.update_property (AccessibleProperty.LABEL, _("Copy"), -1);
+            qr_copy.clicked.connect (() => get_clipboard ().set_text (qr_text));
+            qr_pill.append (qr_copy);
+            overlay.add_overlay (qr_pill);
+
+            if (Singularity.TextRecognition.Recognizer.get_default ().available) {
+                live_text = new Singularity.Widgets.LiveTextSession ();
+                live_text.view.set_geometry_func ((out ox, out oy, out scale) => frame_geometry (out ox, out oy, out scale));
+                overlay.add_overlay (live_text.view);
+                live_text.toggle.add_css_class ("camera-live-text");
+                live_text.toggle.halign = Align.END;
+                live_text.toggle.valign = Align.START;
+                live_text.toggle.margin_top = 76;
+                live_text.toggle.margin_end = 24;
+                live_text.toggle.toggled.connect (on_live_text_toggled);
+                overlay.add_overlay (live_text.toggle);
+                live_text.bar.valign = Align.START;
+                live_text.bar.margin_top = 76;
+                overlay.add_overlay (live_text.bar);
+            }
 
             countdown = new Label ("");
             countdown.add_css_class ("camera-countdown");
@@ -326,8 +426,35 @@ namespace Singularity.Apps.Camera {
             set_action_enabled ("switch-camera", stack != null && stack.visible_child_name == "camera" && engine.devices.size > 1);
         }
 
+        private void on_live_text_toggled () {
+            if (live_text.active) {
+                qr_pill.visible = false;
+                preview.remove_css_class ("mirrored");
+                if (last_frame != null) preview.paintable = last_frame;
+                live_text.set_texture (last_frame);
+            } else {
+                live_text.set_texture (null);
+                sync_mirror ();
+            }
+        }
+
+        private bool frame_geometry (out double ox, out double oy, out double scale) {
+            ox = oy = 0;
+            scale = 1;
+            var paintable = preview.paintable;
+            if (paintable == null || live_text == null) return false;
+            Graphene.Rect bounds;
+            if (!preview.compute_bounds (live_text.view, out bounds)) return false;
+            double w = paintable.get_intrinsic_width (), h = paintable.get_intrinsic_height ();
+            if (w <= 0 || h <= 0) return false;
+            scale = double.min (bounds.size.width / w, bounds.size.height / h);
+            ox = bounds.origin.x + (bounds.size.width - w * scale) / 2;
+            oy = bounds.origin.y + (bounds.size.height - h * scale) / 2;
+            return true;
+        }
+
         private void sync_mirror () {
-            if (mirror) preview.add_css_class ("mirrored");
+            if (mirror && (live_text == null || !live_text.active)) preview.add_css_class ("mirrored");
             else preview.remove_css_class ("mirrored");
             mirror_bubble.tooltip_text = mirror ? _("Preview Is Mirrored") : _("Preview Is Not Mirrored");
             var mirror_action = lookup_action ("mirror") as SimpleAction;
