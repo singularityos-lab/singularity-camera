@@ -305,6 +305,7 @@ namespace Singularity.Apps.Camera {
             var qr_open = new Button.with_label (_("Open in QR Codes"));
             qr_open.add_css_class ("pill");
             qr_open.add_css_class ("suggested-action");
+            qr_open.visible = Singularity.Capabilities.has_app ("dev.sinty.qrcodes");
             qr_open.clicked.connect (open_qr);
             qr_pill.append (qr_open);
             var qr_copy = new Button.from_icon_name ("edit-copy-symbolic");
