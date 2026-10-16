@@ -13,6 +13,7 @@ gst_dep   = dependency('gstreamer-1.0')
 gstapp_dep = dependency('gstreamer-app-1.0')
 gstvideo_dep = dependency('gstreamer-video-1.0')
 posix_dep = meson.get_compiler('vala').find_library('posix')
+m_dep = meson.get_compiler('c').find_library('m', required: false)
 
 libsingularity_dep = dependency('singularity-1.0',
   fallback: ['libsingularity', 'libsingularity_dep']
@@ -32,7 +33,7 @@ resources = gnome.compile_resources(
 
 executable('singularity-camera',
   files('src/camera.vala', 'src/window.vala', 'src/app.vala') + [resources],
-  dependencies: [gtk_dep, gee_dep, gst_dep, gstapp_dep, gstvideo_dep, posix_dep, libsingularity_dep],
+  dependencies: [gtk_dep, gee_dep, gst_dep, gstapp_dep, gstvideo_dep, posix_dep, m_dep, libsingularity_dep],
   install: true
 )
 
