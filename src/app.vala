@@ -27,6 +27,7 @@ namespace Singularity.Apps.Camera {
 
         protected override void startup () {
             base.startup ();
+            CameraIntents.install (this);
             IconTheme.get_for_display (Gdk.Display.get_default ()).add_resource_path ("/dev/sinty/camera/icons");
             var provider = new CssProvider ();
             provider.load_from_string (CSS);

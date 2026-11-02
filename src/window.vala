@@ -547,6 +547,31 @@ namespace Singularity.Apps.Camera {
             }
         }
 
+        internal string agent_photo () throws Error {
+            if (stack.visible_child_name != "camera") throw new IOError.NOT_FOUND ("the camera is not ready");
+            if (engine.recording) throw new IOError.BUSY ("a recording is running");
+            select_mode ("photo");
+            last_path = engine.take_photo (mirror);
+            flash_screen ();
+            update_last ();
+            return last_path;
+        }
+
+        internal void agent_video (bool start) throws Error {
+            if (!start) {
+                if (engine.recording) engine.stop_recording ();
+                return;
+            }
+            if (stack.visible_child_name != "camera") throw new IOError.NOT_FOUND ("the camera is not ready");
+            if (engine.recording) return;
+            select_mode ("video");
+            engine.start_recording ();
+        }
+
+        internal string? agent_last () {
+            return last_path;
+        }
+
         private void flash_screen () {
             flash.opacity = 1;
             int64 start = -1;

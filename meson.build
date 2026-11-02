@@ -32,7 +32,7 @@ resources = gnome.compile_resources(
 )
 
 executable('singularity-camera',
-  files('src/camera.vala', 'src/window.vala', 'src/app.vala') + [resources],
+  files('src/agent_intents.vala', 'src/camera.vala', 'src/window.vala', 'src/app.vala') + [resources],
   dependencies: [gtk_dep, gee_dep, gst_dep, gstapp_dep, gstvideo_dep, posix_dep, m_dep, libsingularity_dep],
   install: true
 )
