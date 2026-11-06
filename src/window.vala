@@ -607,6 +607,17 @@ namespace Singularity.Apps.Camera {
             update_last ();
         }
 
+        private async void load_thumbnail (string path) {
+            try {
+                var tex = yield Singularity.Async.run<Gdk.Texture> ((c) => {
+                    var pix = new Gdk.Pixbuf.from_file_at_scale (path, 120, 120, true);
+                    return Gdk.Texture.for_pixbuf (pix);
+                }, Singularity.Async.Qos.USER, Singularity.Async.scope_of (this));
+                if (last_path == path) last_picture.paintable = tex;
+            } catch (Error e) {
+            }
+        }
+
         private void update_last () {
             set_action_enabled ("open-last", last_path != null);
             if (last_path == null) {
@@ -615,11 +626,7 @@ namespace Singularity.Apps.Camera {
             }
             last_button.visible = true;
             if (last_path.has_suffix (".jpg")) {
-                try {
-                    var pix = new Gdk.Pixbuf.from_file_at_scale (last_path, 120, 120, true);
-                    last_picture.paintable = Gdk.Texture.for_pixbuf (pix);
-                } catch (Error e) {
-                }
+                load_thumbnail.begin (last_path);
             } else if (preview.paintable != null) {
                 last_picture.paintable = preview.paintable.get_current_image ();
             }
