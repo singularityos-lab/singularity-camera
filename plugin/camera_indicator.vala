@@ -68,17 +68,16 @@ namespace CameraIndicator {
                 update ({});
                 return;
             }
-            new GLib.Thread<void> ("camera-indicator", () => {
+            Singularity.Async.dispatch(this, Singularity.Async.Qos.USER, (c) => {
                 int[] direct = {};
                 bool through_server = false;
                 foreach (int pid in CameraUsers.scan (DEVICE_PREFIX)) {
                     if (CameraUsers.is_media_server (pid)) through_server = true;
                     else direct += pid;
                 }
-                GLib.Idle.add (() => {
+                return () => {
                     collect.begin (direct, through_server);
-                    return GLib.Source.REMOVE;
-                });
+                };
             });
         }
 
