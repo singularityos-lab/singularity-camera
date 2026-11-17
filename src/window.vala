@@ -171,10 +171,7 @@ namespace Singularity.Apps.Camera {
                     if (last_path != null) new FileLauncher (File.new_for_path (last_path)).launch.begin (this, null);
                 } },
                 { "open-folder", () => open_folder () },
-                { "fullscreen", () => {
-                    if (fullscreened) unfullscreen ();
-                    else fullscreen ();
-                } },
+                { "fullscreen", () => toggle_fullscreen () },
                 { "close", () => close () }
             };
             add_action_entries (entries, this);
