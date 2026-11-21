@@ -4,10 +4,34 @@ namespace Singularity.Apps.Camera {
         public string name;
         public Gst.Device? device;
         public string? description;
+        public int rotation;
 
         public CameraDevice (Gst.Device device) {
             this.device = device;
             this.name = device.display_name;
+            this.rotation = sensor_rotation (device);
+        }
+
+        private static int sensor_rotation (Gst.Device device) {
+            var props = device.get_properties ();
+            if (props == null) return 0;
+            int degrees = 0;
+            if (!props.get_int ("api.libcamera.rotation", out degrees)) {
+                string? text = props.get_string ("api.libcamera.rotation");
+                if (text == null) return 0;
+                degrees = int.parse (text);
+            }
+            degrees %= 360;
+            return degrees < 0 ? degrees + 360 : degrees;
+        }
+
+        public string? flip_direction () {
+            switch (rotation) {
+                case 90: return "90r";
+                case 180: return "180";
+                case 270: return "90l";
+                default: return null;
+            }
         }
 
         public CameraDevice.from_description (string description) {
@@ -104,6 +128,12 @@ namespace Singularity.Apps.Camera {
             if (src == null) throw new IOError.FAILED (_("The camera could not be opened."));
             var convert = make ("videoconvert");
             var tee = make ("tee");
+            Gst.Element? upright = null;
+            string? direction = devices[current].flip_direction ();
+            if (direction != null) {
+                upright = Gst.ElementFactory.make ("videoflip", "upright");
+                if (upright != null) Gst.Util.set_object_arg (upright, "video-direction", direction);
+            }
             var q1 = make ("queue");
             var scale = make ("videoconvert", "preview-convert");
             var appsink = (Gst.App.Sink) make ("appsink");
@@ -116,7 +146,15 @@ namespace Singularity.Apps.Camera {
             sink = appsink;
             q1.set ("leaky", 2);
             pipeline.add_many (src, convert, tee, q1, scale, appsink);
-            if (!src.link (convert) || !convert.link (tee) || !tee.link (q1) || !q1.link (scale) || !scale.link (appsink)) throw new IOError.FAILED (_("The camera stream could not be set up."));
+            bool linked;
+            if (upright != null) {
+                var raw = make ("videoconvert", "upright-convert");
+                pipeline.add_many (raw, upright);
+                linked = src.link (raw) && raw.link (upright) && upright.link (convert);
+            } else {
+                linked = src.link (convert);
+            }
+            if (!linked || !convert.link (tee) || !tee.link (q1) || !q1.link (scale) || !scale.link (appsink)) throw new IOError.FAILED (_("The camera stream could not be set up."));
             if (record) {
                 var q2 = make ("queue");
                 var vconv = make ("videoconvert", "record-convert");
