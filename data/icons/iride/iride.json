@@ -1,0 +1,432 @@
+{
+ "format": 1,
+ "canvas": [
+  236,
+  236
+ ],
+ "box": [
+  12,
+  12,
+  224,
+  230
+ ],
+ "stack": [
+  {
+   "shadow": {
+    "dx": 0,
+    "dy": 6,
+    "blur": 7,
+    "color": "#080d1a",
+    "opacity": 0.55,
+    "region": [
+     -20,
+     -20,
+     276,
+     276
+    ]
+   },
+   "stack": [
+    {
+     "layer": "layers/000.svg",
+     "piece": "bezel"
+    },
+    {
+     "layer": "layers/001.svg",
+     "piece": "bezel"
+    },
+    {
+     "rim": "M12 118A106 106 0 1 0 224 118A106 106 0 1 0 12 118Z",
+     "light": [
+      12,
+      12,
+      224,
+      224
+     ],
+     "piece": "bezel"
+    }
+   ]
+  },
+  {
+   "layer": "layers/002.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/003.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/004.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/005.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/006.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/007.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/008.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/009.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/010.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/011.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/012.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/013.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/014.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/015.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/016.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/017.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/018.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/019.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/020.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/021.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/022.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/023.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/024.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/025.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/026.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/027.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/028.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/029.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/030.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/031.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/032.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/033.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/034.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/035.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/036.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/037.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/038.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/039.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/040.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/041.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/042.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/043.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/044.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/045.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/046.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/047.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/048.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/049.svg",
+   "piece": "bezel"
+  },
+  {
+   "layer": "layers/050.svg",
+   "piece": "ring"
+  },
+  {
+   "layer": "layers/051.svg",
+   "piece": "ring"
+  },
+  {
+   "layer": "layers/052.svg",
+   "piece": "caption"
+  },
+  {
+   "layer": "layers/053.svg",
+   "piece": "lens"
+  },
+  {
+   "layer": "layers/054.svg",
+   "piece": "lens"
+  },
+  {
+   "layer": "layers/055.svg",
+   "piece": "iris"
+  },
+  {
+   "layer": "layers/056.svg",
+   "piece": "pupil"
+  },
+  {
+   "layer": "layers/057.svg",
+   "piece": "glass"
+  },
+  {
+   "layer": "layers/058.svg",
+   "piece": "glass"
+  },
+  {
+   "layer": "layers/059.svg",
+   "piece": "glass"
+  }
+ ],
+ "motion": [
+  {
+   "piece": "bezel",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "rotate",
+     "from": [
+      -75
+     ],
+     "at": 0,
+     "duration": 700,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "ring",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      0.8,
+      0.8
+     ],
+     "at": 60,
+     "duration": 360,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "caption",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 520,
+     "duration": 200,
+     "ease": "out"
+    }
+   ]
+  },
+  {
+   "piece": "lens",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      0.6,
+      0.6
+     ],
+     "at": 100,
+     "duration": 360,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "iris",
+   "origin": [
+    118.5,
+    116.7
+   ],
+   "tracks": [
+    {
+     "kind": "rotate",
+     "from": [
+      110
+     ],
+     "at": 180,
+     "duration": 560,
+     "ease": "out"
+    },
+    {
+     "kind": "scale",
+     "from": [
+      1.55,
+      1.55
+     ],
+     "at": 180,
+     "duration": 560,
+     "ease": "out"
+    },
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 180,
+     "duration": 120,
+     "ease": "out"
+    }
+   ]
+  },
+  {
+   "piece": "pupil",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      2.2,
+      2.2
+     ],
+     "at": 180,
+     "duration": 560,
+     "ease": "out"
+    }
+   ]
+  },
+  {
+   "piece": "glass",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 520,
+     "duration": 230,
+     "ease": "out"
+    }
+   ]
+  }
+ ]
+}
