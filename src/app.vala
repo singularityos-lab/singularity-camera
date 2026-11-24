@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Singularity.Apps.Camera {
 
-    public class CameraApp : Singularity.Application {
+    public class CameraApp : Singularity.Application, Singularity.Migration.Migratable {
         public CameraApp () {
             Object (application_id: "dev.sinty.camera", flags: ApplicationFlags.DEFAULT_FLAGS);
             force_dark = true;
@@ -102,6 +102,37 @@ namespace Singularity.Apps.Camera {
             var w = get_active_window ();
             if (w == null) w = new CameraWindow (this);
             w.present ();
+        }
+
+        public void prepare_move () throws Singularity.Migration.MigrationError {
+            foreach (var w in get_windows ()) {
+                if (w is CameraWindow) ((CameraWindow) w).prepare_move ();
+            }
+        }
+
+        public Variant save_model () {
+            return new VariantDict ().end ();
+        }
+
+        public async void restore_model (Variant model) throws Error {
+        }
+
+        public string window_kind (Gtk.Window w) {
+            return (w is CameraWindow) ? "camera" : "";
+        }
+
+        public Variant save_window (Gtk.Window w) {
+            return ((CameraWindow) w).save_migration ();
+        }
+
+        public async Gtk.Window? rebuild_window (string kind, Variant data) throws Error {
+            if (kind != "camera") return null;
+            foreach (var old in get_windows ().copy ()) {
+                if (old is CameraWindow) old.destroy ();
+            }
+            var w = new CameraWindow (this);
+            w.restore_migration (data);
+            return w;
         }
 
         private const string CSS = """

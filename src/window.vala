@@ -131,10 +131,9 @@ namespace Singularity.Apps.Camera {
                 sync_shutter ();
             });
             engine.notify["recording"].connect (sync_shutter);
-            close_request.connect (() => {
+            ((Widget) this).destroy.connect (() => {
                 if (engine.recording) engine.stop_recording ();
                 engine.stop ();
-                return false;
             });
             var keys = new EventControllerKey ();
             keys.key_pressed.connect ((keyval, code, st) => {
@@ -464,13 +463,47 @@ namespace Singularity.Apps.Camera {
         }
 
         private void apply_timer (int seconds) {
+            set_timer (seconds);
+            show_toast (timer_seconds == 0 ? _("Timer off") : _("Timer %d seconds").printf (timer_seconds));
+        }
+
+        private void set_timer (int seconds) {
             timer_seconds = seconds;
             var timer_action = lookup_action ("timer") as SimpleAction;
             if (timer_action != null) timer_action.set_state (new Variant.int32 (seconds));
             timer_bubble.tooltip_text = timer_seconds == 0 ? _("Timer: Off") : _("Timer: %d Seconds").printf (timer_seconds);
             if (timer_seconds > 0) timer_bubble.add_css_class ("camera-timer-on");
             else timer_bubble.remove_css_class ("camera-timer-on");
-            show_toast (timer_seconds == 0 ? _("Timer off") : _("Timer %d seconds").printf (timer_seconds));
+        }
+
+        public void prepare_move () throws Singularity.Migration.MigrationError {
+            if (engine.recording) throw new Singularity.Migration.MigrationError.UNSUPPORTED (_("Stop the recording before moving Camera"));
+            if (counting) throw new Singularity.Migration.MigrationError.UNSUPPORTED (_("Wait for the timer to take the photo before moving Camera"));
+        }
+
+        public Variant save_migration () {
+            var d = new VariantDict ();
+            d.insert_value ("mode", new Variant.string (photo_mode.active ? "photo" : "video"));
+            d.insert_value ("timer", new Variant.int32 (timer_seconds));
+            d.insert_value ("mirror", new Variant.boolean (mirror));
+            bool live = engine.current < engine.devices.size;
+            d.insert_value ("camera", new Variant.string (live ? engine.devices[engine.current].name : ""));
+            return d.end ();
+        }
+
+        public void restore_migration (Variant data) {
+            var d = new VariantDict (data);
+            var mode = d.lookup_value ("mode", VariantType.STRING);
+            if (mode != null) select_mode (mode.get_string ());
+            var timer = d.lookup_value ("timer", VariantType.INT32);
+            if (timer != null && (timer.get_int32 () == 0 || timer.get_int32 () == 3 || timer.get_int32 () == 10)) set_timer (timer.get_int32 ());
+            var mirrored = d.lookup_value ("mirror", VariantType.BOOLEAN);
+            if (mirrored != null) {
+                mirror = mirrored.get_boolean ();
+                sync_mirror ();
+            }
+            var camera = d.lookup_value ("camera", VariantType.STRING);
+            if (camera != null && camera.get_string () != "") engine.use_camera (camera.get_string ());
         }
 
         private void sync_shutter () {

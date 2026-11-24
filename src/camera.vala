@@ -339,5 +339,15 @@ namespace Singularity.Apps.Camera {
             current = (current + 1) % devices.size;
             start ();
         }
+
+        public void use_camera (string name) {
+            if (recording) return;
+            for (int i = 0; i < devices.size; i++) {
+                if (devices[i].name != name || i == current) continue;
+                current = i;
+                start ();
+                return;
+            }
+        }
     }
 }
