@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Singularity.Apps.Camera {
 
-    public class CameraApp : Singularity.Application, Singularity.Migration.Migratable {
+    public class CameraApp : Singularity.Application, Singularity.Migration.Migratable, Singularity.Startup.Bootable {
         public CameraApp () {
             Object (application_id: "dev.sinty.camera", flags: ApplicationFlags.DEFAULT_FLAGS);
             force_dark = true;
@@ -98,10 +98,33 @@ namespace Singularity.Apps.Camera {
             set_accels_for_action ("win.mirror", { "<Control>m" });
         }
 
-        public override void activate () {
+        public Singularity.Startup.Plan build_plan (Singularity.Startup.Request request) {
+            var plan = new Singularity.Startup.Plan ();
+            plan.version = "camera-1";
+            if (request.kind == Singularity.Startup.RequestKind.SERVICE) {
+                plan.main ("ready", Singularity.Startup.Category.PREPARE, (c) => {})
+                    .reaches (Singularity.Startup.Milestone.SHELL_READY)
+                    .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                    .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            plan.main ("window", Singularity.Startup.Category.SHELL, (c) => {
+                c.window = show_window ();
+            }).reaches (Singularity.Startup.Milestone.SHELL_READY)
+              .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+              .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+            return plan;
+        }
+
+        public void handle_request (Singularity.Startup.Request request) {
+            show_window ();
+        }
+
+        private Gtk.Window show_window () {
             var w = get_active_window ();
             if (w == null) w = new CameraWindow (this);
             w.present ();
+            return w;
         }
 
         public void prepare_move () throws Singularity.Migration.MigrationError {
