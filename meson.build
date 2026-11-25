@@ -13,6 +13,7 @@ gst_dep   = dependency('gstreamer-1.0')
 gstapp_dep = dependency('gstreamer-app-1.0')
 gstvideo_dep = dependency('gstreamer-video-1.0')
 posix_dep = meson.get_compiler('vala').find_library('posix')
+linux_dep = meson.get_compiler('vala').find_library('linux')
 m_dep = meson.get_compiler('c').find_library('m', required: false)
 
 libsingularity_dep = dependency('singularity-1.0',
@@ -38,8 +39,8 @@ executable('singularity-camera',
 )
 
 shared_module('camera-indicator',
-  files('plugin/camera_indicator.vala', 'plugin/camera_users.vala'),
-  dependencies: [gtk_dep, gee_dep, posix_dep, libsingularity_dep, dependency('libpeas-2'), dependency('gio-unix-2.0')],
+  files('plugin/camera_indicator.vala', 'plugin/camera_users.vala', 'plugin/camera_watch.vala'),
+  dependencies: [gtk_dep, gee_dep, posix_dep, linux_dep, libsingularity_dep, dependency('libpeas-2'), dependency('gio-unix-2.0')],
   install: true,
   install_dir: get_option('libdir') / 'singularity' / 'plugins' / 'camera-indicator'
 )
@@ -52,6 +53,12 @@ camera_users_test = executable('camera-users-test',
   dependencies: [gee_dep, posix_dep, dependency('gio-unix-2.0'), libsingularity_dep],
 )
 test('camera-users', camera_users_test, env: ['TMPDIR=' + meson.current_build_dir()])
+
+camera_watch_test = executable('camera-watch-test',
+  files('tests/camera_watch_test.vala', 'plugin/camera_watch.vala'),
+  dependencies: [gee_dep, posix_dep, linux_dep, dependency('gio-unix-2.0')],
+)
+test('camera-watch', camera_watch_test, env: ['TMPDIR=' + meson.current_build_dir()])
 
 install_data('data/dev.sinty.camera.desktop',
   install_dir: get_option('datadir') / 'applications'

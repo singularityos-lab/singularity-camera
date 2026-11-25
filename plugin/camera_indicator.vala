@@ -9,6 +9,7 @@ namespace CameraIndicator {
     public class Indicator : Gtk.Box {
         private const string DEVICE_PREFIX = "/dev/video";
         private uint poll_id = 0;
+        private CameraWatch watch;
         private string last_key = "";
         private Gtk.Box list;
         private Gtk.MenuButton button;
@@ -51,16 +52,32 @@ namespace CameraIndicator {
             pop.child = content;
             button.popover = pop;
 
+            watch = new CameraWatch (DEVICE_PREFIX);
+            watch.changed.connect (() => {
+                poll ();
+                sync_fallback ();
+            });
+            sync_fallback ();
             poll ();
+        }
+
+        public void stop () {
+            watch.stop ();
+            if (poll_id != 0) GLib.Source.remove (poll_id);
+            poll_id = 0;
+        }
+
+        private void sync_fallback () {
+            if (watch.complete) {
+                if (poll_id != 0) GLib.Source.remove (poll_id);
+                poll_id = 0;
+                return;
+            }
+            if (poll_id != 0) return;
             poll_id = GLib.Timeout.add_seconds (3, () => {
                 poll ();
                 return GLib.Source.CONTINUE;
             });
-        }
-
-        public void stop () {
-            if (poll_id != 0) GLib.Source.remove (poll_id);
-            poll_id = 0;
         }
 
         private void poll () {
